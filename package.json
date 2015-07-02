@@ -1,6 +1,6 @@
 {
   "name": "dynel-data",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "Dynamic Elements Data framework",
   "main": "index.js",
   "directories": {
