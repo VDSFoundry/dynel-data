@@ -221,3 +221,40 @@ describe('Model ctor with nested JSON param, assigns the full model correctly', 
         done();
     });
 });
+
+
+describe('Model ctor with nested hierarchical children assigns the full model correctly', function() {
+    this.timeout(500);
+
+    it('should do something', function(done) {
+
+        var ModelType = Model.extend({
+            className: 'ModelType',
+            define: {
+                name: DT.string(),
+                children: DT.collection({type: 'self'})
+            }
+        });
+
+        var json = '{' +
+            '"name":"level1", ' +
+            '"children": [' +
+            '   {"name":"Gerald"},' +
+            '   {"name":"Hudson"},' +
+            '   {"name":"Jamie"}' +
+            ' ]' +
+            '}';
+
+
+
+        var model = new ModelType({data: json});
+
+        expect(model.name).to.be.equal('level1');
+        expect(model.children.length).to.be.equal(3);
+        expect(model.children.at(0).className).to.be.equal('ModelType');
+        expect(model.children.at(0).name).to.be.equal('Gerald');
+
+        done();
+    });
+});
+
