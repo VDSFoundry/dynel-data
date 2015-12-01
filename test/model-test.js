@@ -5,6 +5,8 @@
 var chai = require('chai');
 var expect = chai.expect;
 var Model = require('../lib/model.js');
+var Collection = require('../lib/collection.js');
+
 var DT = require('../lib/datatypes.js');
 
 var TestModel = Model.extend({
@@ -84,6 +86,53 @@ describe('Model.set  with model object param, assigns the model correctly', func
         done();
     });
 });
+
+
+describe('Model.set  with model object param that has collection property, assigns the model correctly', function() {
+    this.timeout(500);
+
+    it('should do something', function(done) {
+
+        var ChildItemType = Model.extend({
+            define: {
+                name: DT.string()
+            }
+        });
+
+        var ChildType = Model.extend({
+            define: {
+                name: DT.string(),
+                children: DT.collection({type: ChildItemType})
+            }
+        });
+
+        var ModelType = Model.extend({
+            define: {
+                id: DT.number(),
+                child: DT.model({type: ChildType}),
+            }
+        });
+
+        var model = new ModelType({
+            id: 1,
+        });
+
+        var child = new ChildType({name: 'child name', children: new Collection({type: ChildItemType})});
+        child.children.add(new ChildItemType({name: 'child item 1'}));
+        child.children.add(new ChildItemType({name: 'child item 2'}));
+        child.children.add(new ChildItemType({name: 'child item 3'}));
+
+        model.set('child', child);
+
+
+        expect(model.child.name).to.be.equal('child name');
+        expect(model.child.children.length).to.be.equal(3);
+
+        done();
+    });
+});
+
+
 
 describe('Model ctor with normal object param, assigns the model correctly', function() {
     this.timeout(500);
